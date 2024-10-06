@@ -842,3 +842,65 @@ find_minimal_set_cover <- function(sets) {
   return(target_set)
 }
 
+                        simulate1_A_matrix <- function(N,edge_list, sigma){
+  #generate A matrix
+  A_matrix <- matrix(0, nrow = N, ncol = N)
+  for (i in 1:length(edge_list)){
+    A_matrix[edge_list[[i]][2],edge_list[[i]][1]] <- sigma * (ifelse(runif(1) < 0.5, runif(1, -0.8, -0.5), runif(1, 0.5, 0.8)))
+  }
+  for (i in 1:N){
+    A_matrix[i,i] <- -1
+  }
+  colnames(A_matrix) <- rownames(A_matrix) <- 1:N
+  return (A_matrix)
+}
+
+simulate_x_data_onematrix_julia <- function(A_matrix, theta_max, number_datapoints){
+  data_x <- data.frame(Date=as.Date(character()),
+                       File=character(), 
+                       User=character(), 
+                       stringsAsFactors=FALSE) 
+  node_label <- c()
+  for (i in 1:N){
+    node_label[i] <- paste0('x',i)
+  }
+  for (i in 1:number_datapoints){
+    xd <- runif(N)
+    theta = runif(N) * theta_max
+    r <- xd/(1+theta*xd)
+    x0 <- runif(N)
+    x<- solve_system_dynamics(A = A_matrix, r=r, theta = theta, x0=x0,tspan=tspan)
+    data_x <- rbind(data_x, x[nrow(x),])
+  }
+  names(data_x) <- node_label
+  rownames(data_x) <- NULL
+  
+  return(data_x)
+}
+
+matrix_to_adj <- function(A_matrix){
+  for (i in 1:N){
+    for (j in 1:N){
+      if (i==j){
+        A_matrix[i,j] <- 0
+      }
+      if (i!=j){
+        if (A_matrix[i,j]!=0){
+          A_matrix[i,j]=1
+        }
+      }
+    }
+  }
+  return(t(A_matrix))
+}
+
+Adj_matrix_to_PAG <- function(A_matrix){
+  A_matrix_acy <- acyclification(A_matrix)
+  true_pag <- admg2pag(A_matrix_acy,latent_variables = c())
+  return (true_pag)
+}
+
+
+
+
+
