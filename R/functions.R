@@ -842,7 +842,7 @@ find_minimal_set_cover <- function(sets) {
   return(target_set)
 }
 
-                        simulate1_A_matrix <- function(N,edge_list, sigma){
+simulate1_A_matrix <- function(N,edge_list, sigma){
   #generate A matrix
   A_matrix <- matrix(0, nrow = N, ncol = N)
   for (i in 1:length(edge_list)){
